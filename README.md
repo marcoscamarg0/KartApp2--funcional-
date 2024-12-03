@@ -1,50 +1,41 @@
-# Welcome to your Expo app 👋
+# Kart Dashboard App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Descrição
+Um aplicativo de acompanhamento de corrida em tempo real construído com React Native e Tailwind CSS.
 
-## Get started
+## Funcionalidades
+- Visualização de velocidade atual
+- Exibição de voltas
+- Ranking de corredores
+- Mapa em tempo real
+- Interface responsiva
 
-1. Install dependencies
+## Requisitos
+- Node.js
+- Expo CLI
+- Conta Google Cloud (para Maps API)
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Instalação
 ```bash
-npm run reset-project
+git clone https://github.com/seuusuario/race-dashboard.git
+cd race-dashboard
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Configuração
+1. Obtenha API Key do Google Maps
+2. Configure no `app.json`
 
-## Learn more
+## Execução
+```bash
+expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Tecnologias
+- React Native
+- Tailwind CSS (twrnc)
+- Expo
+- React Native Maps
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Licença
+MIT License
