@@ -12,7 +12,7 @@ const RaceDashboard = () => {
       <StatusBar barStyle="light-content" />
       <View style={[
         tw`w-full bg-gray-900 rounded-lg p-4`, 
-        { width: width * 0.95, height: height * 0.9 }
+        { width: width * 1, height: height * 1}
       ]}>
         <View style={tw`flex-row justify-between items-center mb-4`}>
           <TouchableOpacity>
