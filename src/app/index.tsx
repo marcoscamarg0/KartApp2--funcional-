@@ -8,27 +8,45 @@ import RankingList from './RankingList';
 
 const { width, height } = Dimensions.get('window');
 
+interface Runner {
+  id: number;
+  name: string;
+  time: string;
+}
+
+interface RouteCoordinate {
+  latitude: number;
+  longitude: number;
+}
+
+interface Region {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+}
+
 const RaceDashboard = () => {
-  const [currentSpeed, setCurrentSpeed] = useState(0);
-  const [totalDistance, setTotalDistance] = useState(0);
-  const [currentLapTime, setCurrentLapTime] = useState('0:00');
-  const [runners, setRunners] = useState([
-    { id: 1, name: 'CORREDOR 1', time: ""},
-    { id: 2, name: 'CORREDOR 2', time: ""},
-    { id: 3, name: 'CORREDOR 3', time: ""},
-    { id: 4, name: 'CORREDOR 4', time: ""},
-    { id: 5, name: 'CORREDOR 5', time: ""},
-    { id: 6, name: 'CORREDOR 6', time: ""},
+  const [currentSpeed, setCurrentSpeed] = useState<number>(0);
+  const [totalDistance, setTotalDistance] = useState<number>(0);
+  const [currentLapTime, setCurrentLapTime] = useState<string>('0:00');
+  const [runners, setRunners] = useState<Runner[]>([
+    { id: 1, name: 'CORREDOR 1', time: "" },
+    { id: 2, name: 'CORREDOR 2', time: "" },
+    { id: 3, name: 'CORREDOR 3', time: "" },
+    { id: 4, name: 'CORREDOR 4', time: "" },
+    { id: 5, name: 'CORREDOR 5', time: "" },
+    { id: 6, name: 'CORREDOR 6', time: "" },
   ]);
 
-  const [location, setLocation] = useState(null);
-  const [route, setRoute] = useState([]);
-  const locationSubscription = useRef(null);
-  const lapTimeInterval = useRef(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [route, setRoute] = useState<RouteCoordinate[]>([]);
+  const locationSubscription = useRef<Location.LocationSubscription | null>(null);
+  const lapTimeInterval = useRef<number | null>(null);
 
-  // Função para calcular a distância entre dois pontos geográficos
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Raio da Terra em km
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -39,8 +57,7 @@ const RaceDashboard = () => {
     return R * c;
   };
 
-  // Função para atualizar o cronômetro da volta atual
-  const updateLapTime = () => {
+  const updateLapTime = (): void => {
     const now = new Date();
     const lapTime = now.getTime() - (location?.timestamp || now.getTime());
     const minutes = Math.floor(lapTime / 60000);
@@ -62,26 +79,25 @@ const RaceDashboard = () => {
           timeInterval: 1000,
           distanceInterval: 1
         },
-        (newLocation) => {
+        (newLocation: Location.LocationObject) => {
           const speedKmh = newLocation.coords.speed
             ? (newLocation.coords.speed * 3.6).toFixed(1)
             : '0';
           setCurrentSpeed(parseFloat(speedKmh));
 
-          // Atualizar rota, distância e cronômetro
           if (location) {
             const distance = calculateDistance(
-              location.coords.latitude, 
-              location.coords.longitude, 
-              newLocation.coords.latitude, 
+              location.coords.latitude,
+              location.coords.longitude,
+              newLocation.coords.latitude,
               newLocation.coords.longitude
             );
             
             setTotalDistance(prevDistance => prevDistance + distance);
             setRoute(prevRoute => [
-              ...prevRoute, 
+              ...prevRoute,
               {
-                latitude: newLocation.coords.latitude, 
+                latitude: newLocation.coords.latitude,
                 longitude: newLocation.coords.longitude
               }
             ]);
@@ -92,11 +108,9 @@ const RaceDashboard = () => {
         }
       );
 
-      // Iniciar o cronômetro da volta
       lapTimeInterval.current = setInterval(updateLapTime, 100);
     })();
 
-    // Limpar inscrição de localização e cronômetro ao desmontar
     return () => {
       if (locationSubscription.current) {
         locationSubscription.current.remove();
@@ -106,6 +120,18 @@ const RaceDashboard = () => {
       }
     };
   }, []);
+
+  const initialRegion: Region = location ? {
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  } : {
+    latitude: -34.397,
+    longitude: 150.644,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  };
 
   return (
     <View style={tw`flex-1 bg-black items-center justify-center p-4`}>
@@ -140,22 +166,12 @@ const RaceDashboard = () => {
           <MapView
             provider={PROVIDER_GOOGLE}
             style={[tw`w-full rounded-lg`, { height: height * 0.25 }]}
-            initialRegion={location ? {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            } : {
-              latitude: -34.397,
-              longitude: 150.644,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
+            initialRegion={initialRegion}
           >
             {route.length > 0 && (
               <Polyline
                 coordinates={route}
-                strokeColor="#F97316" // Cor laranja para a rota
+                strokeColor="#F97316"
                 strokeWidth={5}
               />
             )}
