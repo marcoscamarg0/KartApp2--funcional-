@@ -159,7 +159,7 @@ const RaceDashboard = () => {
             <Text style={tw`text-white text-3xl font-bold`}>{currentLapTime}</Text>
           </View>
         </View>
-
+//fodase arthur para de me cobrar sua miserá
         <RankingList runners={runners} />
 
         <View style={tw`mb-4`}>
