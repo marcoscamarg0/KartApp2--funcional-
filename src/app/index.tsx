@@ -11,6 +11,7 @@ const { width, height } = Dimensions.get('window');
 const RaceDashboard = () => {
   const [currentSpeed, setCurrentSpeed] = useState(0);
   const [totalDistance, setTotalDistance] = useState(0);
+  const [currentLapTime, setCurrentLapTime] = useState('0:00');
   const [runners, setRunners] = useState([
     { id: 1, name: 'CORREDOR 1', time: ""},
     { id: 2, name: 'CORREDOR 2', time: ""},
@@ -23,6 +24,7 @@ const RaceDashboard = () => {
   const [location, setLocation] = useState(null);
   const [route, setRoute] = useState([]);
   const locationSubscription = useRef(null);
+  const lapTimeInterval = useRef(null);
 
   // Função para calcular a distância entre dois pontos geográficos
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -35,6 +37,15 @@ const RaceDashboard = () => {
       Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c;
+  };
+
+  // Função para atualizar o cronômetro da volta atual
+  const updateLapTime = () => {
+    const now = new Date();
+    const lapTime = now.getTime() - (location?.timestamp || now.getTime());
+    const minutes = Math.floor(lapTime / 60000);
+    const seconds = ((lapTime % 60000) / 1000).toFixed(0);
+    setCurrentLapTime(`${minutes}:${seconds.padStart(2, '0')}`);
   };
 
   useEffect(() => {
@@ -57,7 +68,7 @@ const RaceDashboard = () => {
             : '0';
           setCurrentSpeed(parseFloat(speedKmh));
 
-          // Atualizar rota e distância
+          // Atualizar rota, distância e cronômetro
           if (location) {
             const distance = calculateDistance(
               location.coords.latitude, 
@@ -74,17 +85,24 @@ const RaceDashboard = () => {
                 longitude: newLocation.coords.longitude
               }
             ]);
+            updateLapTime();
           }
 
           setLocation(newLocation);
         }
       );
+
+      // Iniciar o cronômetro da volta
+      lapTimeInterval.current = setInterval(updateLapTime, 100);
     })();
 
-    // Limpar inscrição de localização ao desmontar
+    // Limpar inscrição de localização e cronômetro ao desmontar
     return () => {
       if (locationSubscription.current) {
         locationSubscription.current.remove();
+      }
+      if (lapTimeInterval.current) {
+        clearInterval(lapTimeInterval.current);
       }
     };
   }, []);
@@ -112,7 +130,7 @@ const RaceDashboard = () => {
           </View>
           <View style={tw`bg-gray-800 p-4 rounded-lg w-[48%]`}>
             <Text style={tw`text-orange-500 text-lg`}>VOLTA ATUAL</Text>
-            <Text style={tw`text-white text-3xl font-bold`}>2:10:01</Text>
+            <Text style={tw`text-white text-3xl font-bold`}>{currentLapTime}</Text>
           </View>
         </View>
 
