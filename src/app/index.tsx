@@ -110,7 +110,6 @@ const RaceDashboard = () => {
 
       lapTimeInterval.current = setInterval(updateLapTime, 100);
     })();
-
     return () => {
       if (locationSubscription.current) {
         locationSubscription.current.remove();
